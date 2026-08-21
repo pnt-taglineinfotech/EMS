@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>EMS</title>
+
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <script src="https://unpkg.com/lucide@1.28.0"></script>
+        <script src="common.js"></script>
+
+    </head>
+
+    <body>
+
+        <header>
+
+            <section class="relative px-5 md:px-10 py-5 flex flex-row items-center bg-slate-500 text-white">
+                <h1 class="grow text-lg md:text-4xl font-bold">Employee Management System</h1>
+            </section>
+
+        </header>
+
+        <main class="min-h-[87vh]">
+
+            <section class="flex flex-row p-5 gap-5 items-center">
+
+                <button id="btn-back" type="button" class="w-fit p-2 bg-slate-500 text-white border border-slate-400 rounded-lg hover:bg-slate-600 cursor-pointer">
+                    <i data-lucide="arrowLeft"></i>
+                </button>
+
+                <h2 class="grow text-2xl font-semibold">New Employee</h2>
+
+                <button type="submit" form="form-new-employee" class="hidden w-1/12 py-2 bg-slate-500 text-white text-center border border-slate-400 rounded-lg hover:bg-slate-600 md:flex flex-row gap-2 justify-center cursor-pointer">
+                    <i data-lucide="save"></i> Save
+                </button>
+
+            </section>
+
+            <form id="form-new-employee" method="post" class="md:w-2/5 mx-auto p-5 grid grid-cols-2 gap-5">
+
+                <section class="col-span-full relative group">
+
+                    <input type="text" id="name" name="name" class="w-full py-2 px-3 outline-none ring-2 ring-gray-300 rounded-xl focus:ring-gray-400">
+                    <label for="name" class="absolute -top-2 left-5 text-xs text-gray-600 bg-white" >Employee Name</label>
+
+                </section>
+
+                <section class="relative group">
+
+                    <select id="department" name="department" class="w-full py-2 px-3 outline-none ring-2 ring-gray-300 rounded-xl focus:ring-gray-400 appearance-none" ></select>
+                    <label for="department" class="absolute -top-2 left-5 text-xs text-gray-600 bg-white" >Department</label>
+
+                </section>
+
+                <section class="relative group">
+
+                    <select id="designation" name="designation" class="w-full py-2 px-3 outline-none ring-2 ring-gray-300 rounded-xl focus:ring-gray-400 appearance-none" ></select>
+                    <label for="designation" class="absolute -top-2 left-5 text-xs text-gray-600 bg-white" >Designation</label>
+
+                </section>
+
+                <section class="relative group">
+
+                    <input type="date" id="joining_date" name="joining_date" class="w-full py-2 px-3 outline-none ring-2 ring-gray-300 rounded-xl focus:ring-gray-400">
+                    <label for="joining_date" class="absolute -top-2 left-5 text-xs text-gray-600 bg-white" >Joining Date</label>
+
+                </section>
+
+                <section class="relative group">
+
+                    <input type="date" id="birth_date" name="birth_date" class="w-full py-2 px-3 outline-none ring-2 ring-gray-300 rounded-xl focus:ring-gray-400">
+                    <label for="birth_date" class="absolute -top-2 left-5 text-xs text-gray-600 bg-white" >Date of Birth</label>
+
+                </section>
+
+                <section class="col-span-full flex flex-row justify-evenly">
+
+                    <section class="flex flex-row items-center gap-2">
+                        <input type="radio" id="male" name="gender" value="male" class="size-5"/>
+                        <label for="male" class="select-none" >Male</label>
+                    </section>
+
+                    <section class="flex flex-row items-center gap-2">
+                        <input type="radio" id="female" name="gender" value="female" class="size-5"/>
+                        <label for="female" class="select-none" >Female</label>
+                    </section>
+
+                    <section class="flex flex-row items-center gap-2">
+                        <input type="radio" id="other" name="gender" value="other" class="size-5"/>
+                        <label for="other" class="select-none" >Other</label>
+                    </section>
+
+                </section>
+
+                <section class="col-span-full relative group">
+
+                    <textarea id="address" name="address" rows="3" class="w-full py-2 px-3 outline-none ring-2 ring-gray-300 rounded-xl focus:ring-gray-400 resize-none"></textarea>
+                    <label for="address" class="absolute -top-2 left-5 text-xs text-gray-600 bg-white" >Address</label>
+
+                </section>
+
+                <section class="relative group">
+
+                    <select id="country" name="country" class="w-full py-2 px-3 outline-none ring-2 ring-gray-300 rounded-xl focus:ring-gray-400 appearance-none" ></select>
+                    <label for="country" class="absolute -top-2 left-5 text-xs text-gray-600 bg-white" >Country</label>
+
+                </section>
+
+                <section class="relative group">
+
+                    <select id="state" name="state" class="w-full py-2 px-3 outline-none ring-2 ring-gray-300 rounded-xl focus:ring-gray-400 appearance-none cursor-not-allowed" disabled></select>
+                    <label for="state" class="absolute -top-2 left-5 text-xs text-gray-600 bg-white" >State</label>
+
+                </section>
+
+                <section class="relative group">
+
+                    <select id="city" name="city" class="w-full py-2 px-3 outline-none ring-2 ring-gray-300 rounded-xl focus:ring-gray-400 appearance-none cursor-not-allowed" disabled></select>
+                    <label for="city" class="absolute -top-2 left-5 text-xs text-gray-600 bg-white" >City</label>
+
+                </section>
+
+                <section class="relative group">
+
+                    <input type="text" id="contact" name="contact" class="w-full py-2 px-3 outline-none ring-2 ring-gray-300 rounded-xl focus:ring-gray-400">
+                    <label for="contact" class="absolute -top-2 left-5 text-xs text-gray-600 bg-white" >Contact</label>
+
+                </section>
+
+                <section class="col-span-full relative group">
+
+                    <input type="text" id="email" name="email" class="w-full py-2 px-3 outline-none ring-2 ring-gray-300 rounded-xl focus:ring-gray-400">
+                    <label for="email" class="absolute -top-2 left-5 text-xs text-gray-600 bg-white" >Email</label>
+
+                </section>
+
+                <section class="col-span-full flex justify-center">
+
+                    <button type="submit" class="md:hidden w-1/2 py-2 bg-slate-500 text-white text-center border border-slate-400 rounded-lg hover:bg-slate-600 flex flex-row gap-2 justify-center cursor-pointer">
+                        <i data-lucide="save"></i> Save
+                    </button>
+
+                </section>
+
+            </form>
+
+        </main>
+
+        <footer class="text-lg text-center">@ Created By Pranav Tondlekar.</footer>
+
+    </body>
+
+    <script src="add.js"></script>
+
+    <script> lucide.createIcons(); </script>
+
+</html>
