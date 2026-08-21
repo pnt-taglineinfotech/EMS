@@ -1,5 +1,7 @@
 const form = document.getElementById( 'form-new-employee' );
 
+const goHome = () => { window.location.href = './index.html'; };
+
 document.addEventListener( 'DOMContentLoaded', () => {
 
     let select = form.querySelector( '[name="department"]' );
@@ -100,7 +102,7 @@ form.querySelector( '[name="state"]' ).addEventListener( 'change', e => {
 
 } );
 
-document.getElementById( 'btn-back' ).addEventListener( 'click', () => { window.location.href = '/'; } );
+document.getElementById( 'btn-back' ).addEventListener( 'click', goHome );
 
 form.addEventListener( 'submit', async e => {
 
@@ -163,7 +165,7 @@ form.addEventListener( 'submit', async e => {
             } )
         );
 
-        Alert( 'Success', 'The record is saved.', 'success', 'Ok', () => { window.location.href = './index.html'; } );
+        Alert( 'Success', 'The record is saved.', 'success', 'Ok', goHome );
 
     } catch ( error ) {
 

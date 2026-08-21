@@ -67,7 +67,7 @@ function loadCountry() {
     const select = form.querySelector( '[name="country"]' );
     select.innerHTML = '<option value=""></option>';
 
-    Object.keys( CSC ).map( opt => {
+    Object.keys( CSC ).forEach( opt => {
 
         const option = document.createElement( 'option' );
         option.value = option.innerText = opt;
@@ -96,7 +96,7 @@ function loadState() {
     const state = form.querySelector( '[name="state"]' );
     state.innerHTML = '<option value=""></option>';
 
-    Object.keys( CSC[ value ] ).map( opt => {
+    Object.keys( CSC[ value ] ).forEach( opt => {
 
         const option = document.createElement( 'option' );
         option.value = option.innerText = opt;
@@ -129,7 +129,7 @@ function loadCity() {
 
     city.innerHTML = '<option value=""></option>';
 
-    CSC[ country ][ value ].map( opt => {
+    CSC[ country ][ value ].forEach( opt => {
 
         const option = document.createElement( 'option' );
         option.value = option.innerText = opt;
@@ -200,7 +200,7 @@ form.addEventListener( 'submit', async e => {
                 partitioned: true
             } )
 
-            Alert( 'Success', 'The record is been updated.', 'success', 'Ok', () => { window.location.href = '/'; } );
+            Alert( 'Success', 'The record is been updated.', 'success', 'Ok', goHome );
 
         } ).catch( () =>
             Alert( 'Failure', 'Can\'t update the record.', 'danger', 'Ok' )
