@@ -219,7 +219,7 @@ async function loadData( filter = { name: '', department: '', designation: '', j
                 button.type = 'button';
                 button.className = "w-1/4 md:w-1/8 py-2 bg-slate-500 text-white text-center border border-slate-400 rounded-lg hover:bg-slate-600 cursor-pointer";
                 button.innerText = "Edit";
-                button.addEventListener( 'click', () => { window.location.href = `/edit.html?id=${ elt.id }`; } );
+                button.addEventListener( 'click', () => { window.location.href = `./edit.html?id=${ elt.id }`; } );
                 section.appendChild( button );
 
                 button = document.createElement( 'button' );
@@ -299,7 +299,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
 } );
 
-document.getElementsByName( 'add-employee' ).forEach( e => e.addEventListener( 'click', () => { window.location.href = '/add.html' } ) );
+document.getElementsByName( 'add-employee' ).forEach( e => e.addEventListener( 'click', () => { window.location.href = './add.html' } ) );
 
 document.querySelectorAll( '#delete-employee, #sm-delete-employee' ).forEach( e => e.addEventListener( 'click', () => {
 
