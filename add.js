@@ -163,7 +163,7 @@ form.addEventListener( 'submit', async e => {
             } )
         );
 
-        Alert( 'Success', 'The record is saved.', 'success', 'Ok', () => { window.location.href = '/'; } );
+        Alert( 'Success', 'The record is saved.', 'success', 'Ok', () => { window.location.href = '../'; } );
 
     } catch ( error ) {
 

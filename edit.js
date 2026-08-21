@@ -1,6 +1,6 @@
 const param = new URLSearchParams( window.location.search );
 
-const goHome = () => { window.location.href = '/'; };
+const goHome = () => { window.location.href = '../'; };
 
 const form = document.getElementById( 'form-edit-employee' );
 
