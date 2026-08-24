@@ -6,7 +6,7 @@ const CSC = {
     'India': {
         'Gujarat': [ 'Surat', 'Bharuch', 'Vapi' ],
         'Maharastra': [ 'Mumbai', 'Thane', 'Puna' ],
-        'Rajasthan': [ 'Jaipur, Jodhpur', 'Maewad' ]
+        'Rajasthan': [ 'Jaipur', 'Jodhpur', 'Maewad' ]
     },
     'Country2': {
         '2-State1': [ '2-1-City1', '2-1-City2', '2-1-City3' ],
@@ -19,6 +19,10 @@ const CSC = {
         '3-State3': [ '3-3-City1', '3-3-City2', '3-3-City3' ]
     }
 };
+
+const { PlainDate, Now, Duration } = Temporal;
+
+const goHome = () => { window.location.href = './index.html'; };
 
 const dialogVariant = {
 
@@ -124,5 +128,41 @@ function Confirm( title, message, variant = 'default', buttonText = 'Ok', action
     document.querySelector( 'main' ).appendChild( dialog );
 
     dialog.showModal();
+
+}
+
+function fieldError ( element, flag = true ) {
+
+    const thisClass = element.classList;
+    const siblingClass = element.nextElementSibling.classList;
+
+    if ( flag ) {
+
+        thisClass.remove( 'ring-gray-300', 'focus:ring-gray-400' );
+        thisClass.add( 'ring-red-300', 'focus:ring-red-400', 'bg-red-200' );
+
+        siblingClass.remove( 'text-gray-600' );
+        siblingClass.add( 'text-red-600',  );
+
+        return;
+
+    }
+
+    thisClass.remove( 'ring-red-300', 'focus:ring-red-400', 'bg-red-200' );
+    thisClass.add( 'ring-gray-300', 'focus:ring-gray-400' );
+
+    siblingClass.remove( 'text-red-600' );
+    siblingClass.add( 'text-gray-600' );
+
+}
+
+function setCookie ( data ) {
+
+    cookieStore.set( {
+        name: COOKIE,
+        value: data,
+        maxAge: Duration.from( { hours: 168 } ).total( { unit: 'milliseconds' } ),
+        partitioned: true
+    } );
 
 }

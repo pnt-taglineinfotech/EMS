@@ -1,11 +1,9 @@
 const form = document.getElementById( 'form-new-employee' );
 
-const goHome = () => { window.location.href = './index.html'; };
-
 document.addEventListener( 'DOMContentLoaded', () => {
 
     let select = form.querySelector( '[name="department"]' );
-    select.innerHTML = '<option value=""></option>';
+    select.innerHTML = '<option value="" disabled selected hidden>Select Department</option>';
 
     departments.forEach( e => {
 
@@ -16,7 +14,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     } );
 
     select = form.querySelector( '[name="designation"]' );
-    select.innerHTML = '<option value=""></option>';
+    select.innerHTML = '<option value="" disabled selected hidden>Select Designation</option>';
 
     designations.forEach( e => {
 
@@ -27,7 +25,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     } );
 
     select = form.querySelector( '[name="country"]' );
-    select.innerHTML = '<option value=""></option>';
+    select.innerHTML = '<option value="" disabled selected hidden>Select Country</option>';
 
     Object.keys( CSC ).map( opt => {
 
@@ -41,8 +39,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
 form.querySelector( '[name="country"]' ).addEventListener( 'change', e => {
 
-    const value = e.target.value;
-    if ( value === '' ) {
+    const { value } = e.target;
+    if ( !value ) {
 
         form.querySelectorAll( '[name="state"], [name="city"]' ).forEach( elt => {
 
@@ -56,7 +54,7 @@ form.querySelector( '[name="country"]' ).addEventListener( 'change', e => {
     }
 
     const state = form.querySelector( '[name="state"]' );
-    state.innerHTML = '<option value=""></option>';
+    state.innerHTML = '<option value="" disabled selected hidden>Select State</option>';
 
     Object.keys( CSC[ value ] ).map( opt => {
 
@@ -68,28 +66,27 @@ form.querySelector( '[name="country"]' ).addEventListener( 'change', e => {
 
     state.classList.remove( 'cursor-not-allowed' );
     state.removeAttribute( 'disabled' )
+    state.dispatchEvent( new Event( 'change' ) );
 
 } );
 
 form.querySelector( '[name="state"]' ).addEventListener( 'change', e => {
 
-    const country = form.querySelector( '[name="country"]' ).value;
-    const value = e.target.value;
+    const { value } = e.target;
     const city = form.querySelector( '[name="city"]' );
 
-    if ( value === '' ) {
+    if ( !value ) {
         
         city.value = city.innerHTML = '';
         city.setAttribute( 'disabled', true );
         city.classList.add( 'cursor-not-allowed' );
-
         return;
 
     }
 
-    city.innerHTML = '<option value=""></option>';
+    city.innerHTML = '<option value="" disabled selected hidden>Select City</option>';
 
-    CSC[ country ][ value ].map( opt => {
+    CSC[ form.querySelector( '[name="country"]' ).value ][ value ].map( opt => {
 
         const option = document.createElement( 'option' );
         option.value = option.innerText = opt;
@@ -102,80 +99,179 @@ form.querySelector( '[name="state"]' ).addEventListener( 'change', e => {
 
 } );
 
-document.getElementById( 'btn-back' ).addEventListener( 'click', goHome );
-
 form.addEventListener( 'submit', async e => {
 
     e.preventDefault();
 
     e.target.children.namedItem( 'formError' )?.remove();
 
-    const data = {};
+    const data = {},
+        error = [];
+
+    const section = document.createElement( 'section' );
+    section.id = 'formError';
+    section.className = 'col-span-full text-xs text-red-500';
 
     try {
 
         new FormData( e.target ).forEach( ( value, key ) => { data[ key ] = value.trim(); } );
 
-        if ( Object.values( data ).filter( i => i === '' ).length > 0 )
-            throw new Error( "The form is missing some data. Please fill the nessecary fields." );
+        if ( Object.values( data ).filter( i => !i ).length > 0 ) {
 
-        if ( !/^[A-Z a-z]+$/.test( data.name ) )
-            throw new Error( "The Name should only consist of Alphabets and space." );
+            form.querySelectorAll( 'input:not([type="radio"]), textarea, select' ).forEach( elt => { if ( !elt.value.trim() ) fieldError ( elt ); } );
 
-        const today = new Date();
+            section.innerText = "The form is missing some data. Please fill the necessary fields.";
+            e.target.appendChild( section );
+            return;
 
-        const doj = new Date( data.joining_date );
+        }
+
+        if ( !/^[A-Z\sa-z]{3,150}$/.test( data.name ) ) {
+
+            error.push( "The Name should only consist of 3 to 150 characters of Alphabets and space." );
+            fieldError( form.querySelector( '[name="name"]' ) );
+
+        }
+
+        if ( PlainDate.compare( PlainDate.from( data.joining_date ), Now.plainDateISO() ) >= 0 ) {
+
+            error.push( 'The Joining Date is not Valid.' );
+            fieldError( form.querySelector( '[name="joining_date"]' ) );
+
+        }
+
         if (
-            today.getFullYear() < doj.getFullYear() || 
-            ( today.getFullYear() <= doj.getFullYear() && today.getMonth() < doj.getMonth() ) ||
-            ( today.getFullYear() <= doj.getFullYear() && today.getMonth() <= doj.getMonth() && today.getDate() < doj.getDate() )
-        )
-            throw new Error( 'The Joining Date is not Valid.' );
+            PlainDate.compare( PlainDate.from( data.birth_date ).add( { years: 18 } ), Now.plainDateISO() ) > 0 ||
+            PlainDate.compare( PlainDate.from( data.birth_date ).add( { years: 18 } ), PlainDate.from( data.joining_date ) ) > 0
+        ) {
 
-        const dob = new Date( data.birth_date );
-        if ( ( today.getFullYear() - dob.getFullYear() ) + ( ( today.getMonth() - dob.getMonth() ) / 12 ) < 18 )
-            throw new Error( 'The Age is not eligible to work.' );
+            error.push( 'The Age is not eligible to work, should at least be 18.' );
+            fieldError( form.querySelector( '[name="birth_date"]' ) );
+
+        }
 
         if ( ![ 'male', 'female', 'other' ].includes( data.gender ) )
-            throw new Error( 'The gender is invalid.' );
+            error.push( 'The gender is invalid.' );
 
-        if ( !/^[a-zA-Z0-9\s,.'-]{3,100}$/.test( data.address ) )
-            throw new Error( "The Address should only consist of Alphabets, space, [-], [,], [.] and [\']." );
+        if ( !departments.includes( data.department ) ) {
 
-        if ( !/^\d{10}$/.test( data.contact ) )
-            throw new Error( "The Contact No. should only consist of 10 numerics." );
+            error.push( 'The department is invalid.' );
+            fieldError( form.querySelector( '[name="department"]' ) );
 
-        if ( !/^[a-z0-9.]+@[a-z]+\.[a-z]{2,}$/.test( data.email ) )
-           throw new Error( "The Email is invalid." );
+        }
+
+        if ( !designations.includes( data.designation ) ) {
+
+            error.push( 'The designation is invalid.' );
+            fieldError( form.querySelector( '[name="designation"]' ) );
+
+        }
+
+        if ( !data.country in CSC ) {
+
+            error.push( 'The country is invalid.' );
+            fieldError( form.querySelector( '[name="country"]' ) );
+
+        }
+
+        if ( !data.state in CSC?.[ data.country ] ) {
+
+            error.push( 'The state is invalid.' );
+            fieldError( form.querySelector( '[name="state"]' ) );
+
+        }
+
+        if ( !CSC?.[ data.country ]?.[ data.state ]?.includes( data.city ) ) {
+
+            error.push( 'The city is invalid.' );
+            fieldError( form.querySelector( '[name="city"]' ) );
+
+        }
+
+        if ( !/^[a-zA-Z0-9\s,.'-]{3,200}$/.test( data.address ) ) {
+
+            error.push( "The Address should only consist of 3 to 200 characters of Alphabets, space, [-], [,], [.] and [\']." );
+            fieldError( form.querySelector( '[name="address"]' ) );
+
+        }
+
+        if ( !/^\d{10}$/.test( data.contact ) ) {
+
+            error.push( "The Contact No. should only consist of 10 numerics." );
+            fieldError( form.querySelector( '[name="contact"]' ) );
+
+        }
+
+        if ( !/^[a-z0-9.]+@[a-z]+\.[a-z]{2,}$/.test( data.email ) ) {
+
+            error.push( "The Email is invalid." );
+            fieldError( form.querySelector( '[name="email"]' ) );
+
+        }
+
+        if ( error.length > 0 ) {
+
+            section.innerHTML = error.join( '<br>' );
+            e.target.appendChild( section );
+            return;
+
+        }
 
         let cookie = [], seq = 0;
         await cookieStore.get( COOKIE ).then( ( { value } ) => {
 
             [ cookie, seq ] = JSON.parse( value );
+
+            if ( cookie.find( elt => elt.email === data.email ) ) {
+
+                error.push( 'This email already exists.' );
+                fieldError( form.querySelector( '[name="email"]' ) );
+
+            }
+
+            if ( cookie.find( elt => elt.contact === data.contact ) ) {
+
+                error.push( 'This contact already exists.' );
+                fieldError( form.querySelector( '[name="contact"]' ) );
+
+            }
+
+            if ( error.length > 0 ) {
+
+                section.innerHTML = error.join( '<br>' );
+                e.target.appendChild( section );
+                return;
+
+            }
+
             cookie.push( { ...data, id: ++seq } );
+            setCookie( JSON.stringify( [ cookie, seq ] ) );
+            Alert( 'Success', 'The record is saved.', 'success', 'Ok', goHome );
 
-        } ).catch( () =>
+        } ).catch( () => {
+
             cookie.push( { ...data, id: ++seq } )
-        ).finally( () =>
-            cookieStore.set( {
-                name: COOKIE,
-                value: JSON.stringify( [ cookie, seq ] ),
-                expires: Temporal.Now.instant().add( { hours: 168 } ).epochMilliseconds,
-                partitioned: true
-            } )
-        );
+            setCookie( JSON.stringify( [ cookie, seq ] ) );
+            Alert( 'Success', 'The record is saved.', 'success', 'Ok', goHome );
 
-        Alert( 'Success', 'The record is saved.', 'success', 'Ok', goHome );
+        } );
 
     } catch ( error ) {
 
-        const section = document.createElement( 'section' );
-        section.id = 'formError';
-        section.className = 'col-span-full text-xs text-red-500';
+        console.error( error );
         section.innerText = error.message;
-
         e.target.appendChild( section );
 
     }
 
+} );
+
+document.getElementById( 'btn-back' ).addEventListener( 'click', goHome );
+
+form.querySelectorAll( 'input:not([type="radio"]), textarea, select' ).forEach( elt =>
+    elt.addEventListener( 'blur', e => fieldError( e.target, !e.target.value ) )
+);
+
+form.querySelector( '[name="department"]' ).addEventListener( 'change', () => {
+    form.querySelector( '[name="designation"]' ).value = '';
 } );

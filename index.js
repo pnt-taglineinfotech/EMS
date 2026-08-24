@@ -1,6 +1,6 @@
 let checked = [];
 
-async function loadData( filter = { name: '', department: '', designation: '', joining_date: '', contact: '', email: '' } ) {
+async function loadData( filter = {} ) {
 
     const tableBody = document.getElementById( 'table-data' );
     tableBody.innerHTML = '<section class="p-5 text-lg text-center text-gray-500">No Data Found!</section>';
@@ -19,7 +19,7 @@ async function loadData( filter = { name: '', department: '', designation: '', j
             data = Object.values( data ).filter( elt => RegExp( filter.designation, 'i' ).test( elt.designation ) );
 
         if ( filter?.joining_date )
-            data = Object.values( data ).filter( elt => filter.joining_date === elt.joining_date );
+            data = Object.values( data ).filter( elt => PlainDate.compare( PlainDate.from( filter.joining_date ), PlainDate.from( elt.joining_date ) ) === 0 );
 
         if ( filter?.contact )
             data = Object.values( data ).filter( elt => RegExp( filter.contact, 'i' ).test( elt.contact ) );
@@ -35,15 +35,15 @@ async function loadData( filter = { name: '', department: '', designation: '', j
         Object.values( data ).map( elt => {
 
             const tableRow = document.createElement( 'section' );
-            tableRow.className = "grid grid-cols-9 hover:bg-slate-100 cursor-pointer";
+            tableRow.className = 'grid grid-cols-9 hover:bg-slate-100 cursor-pointer';
 
             let cell = document.createElement( 'section' );
-            cell.className = "p-5 text-center content-center cursor-auto";
+            cell.className = 'p-5 text-center content-center cursor-auto';
             cell.addEventListener( 'click', e => e.stopPropagation() );
 
             const input = document.createElement( 'input' );
-            input.type = "checkbox";
-            input.className = "size-5";
+            input.type = 'checkbox';
+            input.className = 'size-5';
             input.addEventListener( 'click', e => {
 
                 e.stopPropagation();
@@ -54,13 +54,13 @@ async function loadData( filter = { name: '', department: '', designation: '', j
 
                 if ( checked.length === 0 ) {
 
-                    document.getElementById( 'delete-employee' ).classList.remove( 'md:block' );
-                    document.getElementById( 'sm-delete-employee' ).classList.add( 'hidden' );
+                    document.getElementById( 'delete-employee' ).classList.replace( 'md:flex', 'md:hidden' );
+                    document.getElementById( 'sm-delete-employee' ).classList.replace( 'flex', 'hidden' );
 
                 } else {
 
-                    document.getElementById( 'delete-employee' ).classList.add( 'md:block' );
-                    document.getElementById( 'sm-delete-employee' ).classList.remove( 'hidden' );
+                    document.getElementById( 'delete-employee' ).classList.replace( 'md:hidden', 'md:flex' );
+                    document.getElementById( 'sm-delete-employee' ).classList.replace( 'hidden', 'flex' );
 
                 }
 
@@ -69,163 +69,165 @@ async function loadData( filter = { name: '', department: '', designation: '', j
             tableRow.appendChild( cell );
 
             cell = document.createElement( 'section' );
-            cell.className = "col-span-2 p-5 text-center content-center";
+            cell.className = 'col-span-2 p-5 content-center';
             cell.innerText = elt.name;
             tableRow.appendChild( cell );
 
             cell = document.createElement( 'section' );
-            cell.className = "p-5 text-center content-center";
+            cell.className = 'p-5 text-center content-center';
             cell.innerText = elt.department;
             tableRow.appendChild( cell );
 
             cell = document.createElement( 'section' );
-            cell.className = "p-5 text-center content-center";
+            cell.className = 'p-5 text-center content-center';
             cell.innerText = elt.designation;
             tableRow.appendChild( cell );
 
             cell = document.createElement( 'section' );
-            cell.className = "p-5 text-center content-center";
+            cell.className = 'p-5 text-center content-center';
             cell.innerText = elt.joining_date;
             tableRow.appendChild( cell );
 
             cell = document.createElement( 'section' );
-            cell.className = "p-5 text-center content-center";
+            cell.className = 'p-5 text-center content-center';
             cell.innerText = elt.contact;
             tableRow.appendChild( cell );
 
             cell = document.createElement( 'section' );
-            cell.className = "col-span-2 p-5 text-center content-center";
+            cell.className = 'col-span-2 p-5 text-center content-center';
             cell.innerText = elt.email;
             tableRow.appendChild( cell );
 
             tableRow.addEventListener( 'click', () => {
                 
                 const modal = document.createElement( 'dialog' );
-                modal.id = "view-employee";
-                modal.className = "m-auto p-5 border border-gray-300 rounded-3xl w-full md:w-2/3";
+                modal.id = 'view-employee';
+                modal.className = 'm-auto p-5 border border-gray-300 rounded-3xl w-full md:w-2/3';
 
                 let section = document.createElement( 'section' );
-                section.className = "flex flex-row justify-between items-center";
-                section.innerHTML = `<section class="text-3xl font-semibold content-center">Employee Details</section>`;
+                section.className = 'flex flex-row justify-between items-center';
+                section.innerHTML = '<section class="text-3xl font-semibold content-center">Employee Details</section>';
 
                 let button = document.createElement( 'button' );
                 button.type = 'button';
-                button.className = "h-fit md:text-lg bg-red-400 text-white rounded-lg px-4 py-2 hover:bg-red-500 cursor-pointer";
-                button.innerText = "Cancel";
+                button.className = 'md:text-lg bg-red-400 text-white rounded-lg p-2 hover:bg-red-500 cursor-pointer';
+                button.innerHTML = '<i data-lucide="x"></i>';
                 button.addEventListener( 'click', () => modal.remove() );
                 section.appendChild( button );
 
                 modal.appendChild( section );
 
                 section = document.createElement( 'section' );
-                section.className = "mt-5 px-5 grid grid-cols-1 md:grid-cols-6 gap-2";
+                section.className = 'mt-5 px-5 grid grid-cols-1 md:grid-cols-6 gap-2';
 
                 let subSection = document.createElement( 'section' );
-                subSection.className = "font-semibold content-center";
-                subSection.innerText = "Employee Name";
+                subSection.className = 'font-semibold content-center';
+                subSection.innerText = 'Employee Name';
                 section.appendChild( subSection );
 
                 subSection = document.createElement( 'section' );
-                subSection.className = "md:col-span-5 p-2 border border-gray-300 rounded-2xl";
+                subSection.className = 'md:col-span-5 p-2 border border-gray-300 rounded-2xl';
                 subSection.innerText = elt.name;
                 section.appendChild( subSection );
 
                 subSection = document.createElement( 'section' );
-                subSection.className = "font-semibold content-center";
-                subSection.innerText = "Department";
+                subSection.className = 'font-semibold content-center';
+                subSection.innerText = 'Department';
                 section.appendChild( subSection );
 
                 subSection = document.createElement( 'section' );
-                subSection.className = "md:col-span-2 p-2 border border-gray-300 rounded-2xl";
+                subSection.className = 'md:col-span-2 p-2 border border-gray-300 rounded-2xl';
                 subSection.innerText = elt.department;
                 section.appendChild( subSection );
 
                 subSection = document.createElement( 'section' );
-                subSection.className = "font-semibold content-center";
-                subSection.innerText = "Designation";
+                subSection.className = 'font-semibold content-center';
+                subSection.innerText = 'Designation';
                 section.appendChild( subSection );
 
                 subSection = document.createElement( 'section' );
-                subSection.className = "md:col-span-2 p-2 border border-gray-300 rounded-2xl";
+                subSection.className = 'md:col-span-2 p-2 border border-gray-300 rounded-2xl';
                 subSection.innerText = elt.designation;
                 section.appendChild( subSection );
 
                 subSection = document.createElement( 'section' );
-                subSection.className = "font-semibold content-center";
-                subSection.innerText = "Joining Date";
+                subSection.className = 'font-semibold content-center';
+                subSection.innerText = 'Joining Date';
+                section.appendChild( subSection );
+
+                const getPlainDateGB = date => PlainDate.from( date ).toLocaleString( 'en-GB' );
+
+                subSection = document.createElement( 'section' );
+                subSection.className = 'md:col-span-2 p-2 border border-gray-300 rounded-2xl';
+                subSection.innerText = getPlainDateGB( elt.joining_date );
                 section.appendChild( subSection );
 
                 subSection = document.createElement( 'section' );
-                subSection.className = "md:col-span-2 p-2 border border-gray-300 rounded-2xl";
-                subSection.innerText = elt.joining_date;
+                subSection.className = 'font-semibold content-center';
+                subSection.innerText = 'Date Of Birth';
                 section.appendChild( subSection );
 
                 subSection = document.createElement( 'section' );
-                subSection.className = "font-semibold content-center";
-                subSection.innerText = "Date Of Birth";
+                subSection.className = 'md:col-span-2 p-2 border border-gray-300 rounded-2xl';
+                subSection.innerText = getPlainDateGB( elt.birth_date );
                 section.appendChild( subSection );
 
                 subSection = document.createElement( 'section' );
-                subSection.className = "md:col-span-2 p-2 border border-gray-300 rounded-2xl";
-                subSection.innerText = elt.birth_date;
+                subSection.className = 'font-semibold content-center';
+                subSection.innerText = 'Gender';
                 section.appendChild( subSection );
 
                 subSection = document.createElement( 'section' );
-                subSection.className = "font-semibold content-center";
-                subSection.innerText = "Gender";
-                section.appendChild( subSection );
-
-                subSection = document.createElement( 'section' );
-                subSection.className = "md:col-span-2 p-2 border border-gray-300 rounded-2xl";
+                subSection.className = 'md:col-span-2 p-2 border border-gray-300 rounded-2xl';
                 subSection.innerText = elt.gender;
                 section.appendChild( subSection );
 
                 subSection = document.createElement( 'section' );
-                subSection.className = "font-semibold content-center";
-                subSection.innerText = "Contact No.";
+                subSection.className = 'font-semibold content-center';
+                subSection.innerText = 'Contact No.';
                 section.appendChild( subSection );
 
                 subSection = document.createElement( 'section' );
-                subSection.className = "md:col-span-2 p-2 border border-gray-300 rounded-2xl";
+                subSection.className = 'md:col-span-2 p-2 border border-gray-300 rounded-2xl';
                 subSection.innerText = elt.contact;
                 section.appendChild( subSection );
 
                 subSection = document.createElement( 'section' );
-                subSection.className = "font-semibold content-center";
-                subSection.innerText = "Address";
+                subSection.className = 'font-semibold content-center';
+                subSection.innerText = 'Address';
                 section.appendChild( subSection );
 
                 subSection = document.createElement( 'section' );
-                subSection.className = "md:col-span-5 h-30 p-2 border border-gray-300 rounded-2xl";
+                subSection.className = 'md:col-span-5 h-30 p-2 border border-gray-300 rounded-2xl';
                 subSection.innerText = `${ elt.address }, ${ elt.city }, ${ elt.state }, ${ elt.country }`;
                 section.appendChild( subSection );
 
                 subSection = document.createElement( 'section' );
-                subSection.className = "font-semibold content-center";
-                subSection.innerText = "Email";
+                subSection.className = 'font-semibold content-center';
+                subSection.innerText = 'Email';
                 section.appendChild( subSection );
 
                 subSection = document.createElement( 'section' );
-                subSection.className = "md:col-span-5 p-2 border border-gray-300 rounded-2xl";
+                subSection.className = 'md:col-span-5 p-2 border border-gray-300 rounded-2xl';
                 subSection.innerText = elt.email;
                 section.appendChild( subSection );
 
                 modal.appendChild( section );
 
                 section = document.createElement( 'section' );
-                section.className = "mt-10 flex flex-row justify-around";
+                section.className = 'mt-10 flex flex-row justify-around';
 
                 button = document.createElement( 'button' );
                 button.type = 'button';
-                button.className = "w-1/4 md:w-1/8 py-2 bg-slate-500 text-white text-center border border-slate-400 rounded-lg hover:bg-slate-600 cursor-pointer";
-                button.innerText = "Edit";
+                button.className = 'w-2/5 md:w-1/8 p-2 bg-slate-500 text-white border border-slate-400 rounded-lg hover:bg-slate-600 cursor-pointer flex flex-row gap-2 justify-center items-center';
+                button.innerHTML = '<i data-lucide="pen"></i> Edit';
                 button.addEventListener( 'click', () => { window.location.href = `./edit.html?id=${ elt.id }`; } );
                 section.appendChild( button );
 
                 button = document.createElement( 'button' );
                 button.type = 'button';
-                button.className = "w-1/4 md:w-1/8 py-2 bg-red-500 text-white text-center border border-red-400 rounded-lg hover:bg-red-600 cursor-pointer";
-                button.innerText = "Delete";
+                button.className = 'w-2/5 md:w-1/8 p-2 bg-red-500 text-white text-center border border-red-400 rounded-lg hover:bg-red-600 cursor-pointer flex flex-row gap-2 justify-center items-center';
+                button.innerHTML = '<i data-lucide="trash2"></i> Delete';
                 button.addEventListener( 'click', () => {
 
                     const confirm = async () => {
@@ -238,7 +240,7 @@ async function loadData( filter = { name: '', department: '', designation: '', j
                             cookieStore.set( {
                                 name: COOKIE,
                                 value: JSON.stringify( cookie ),
-                                expires: Temporal.Now.instant().add( { hours: 168 } ).epochMilliseconds,
+                                expires: Now.instant().add( { hours: 168 } ).epochMilliseconds,
                                 partitioned: true
                             } );
 
@@ -257,6 +259,7 @@ async function loadData( filter = { name: '', department: '', designation: '', j
                 modal.appendChild( section );
 
                 document.querySelector( 'main' ).appendChild( modal );
+                lucide.createIcons();
                 modal.showModal();
             
             } );
@@ -265,7 +268,7 @@ async function loadData( filter = { name: '', department: '', designation: '', j
 
         } );
 
-    } ).catch( error => { console.error( error );
+    } ).catch( () => {
         tableBody.innerHTML = '<section class="p-5 text-lg text-center text-gray-500">No Data Found!</section>';
     } );
 
@@ -327,7 +330,7 @@ document.querySelectorAll( '#delete-employee, #sm-delete-employee' ).forEach( e 
         );
 
     }
-    Confirm( 'Delete Comfirmation', `Do you want to delete all the selected records ?`, 'warning', 'Delete', confirm );
+    Confirm( 'Delete Comfirmation', 'Do you want to delete all the selected records ?', 'warning', 'Delete', confirm );
 
 } ) );
 
